@@ -6,7 +6,7 @@ const API = 'http://localhost:3000'
 export default function App() {
   const [todos, setTodos] = useState([])
   const [task, setTask] = useState('')
-  const [filter, setFilter = useState('all')
+  const [filter, setFilter] = useState('all')
 
   useEffect(() => {
     fetch(`${API}/todos`).then(r => r.json()).then(setTodos)
