@@ -1,0 +1,64 @@
+name: Fullstack CI/CD
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  # --- Backend Job ---
+  build-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Backend Dependencies
+        run: npm install
+        working-directory: ./backend
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        working-directory: ./backend
+
+      - name: Build and Push Backend Docker Image
+        uses: mr-smithers-excellent/docker-build-push@v6
+        with:
+          image: ntronics/cicd-backend
+          directory: ./backend
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+  # --- Frontend Job ---
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Frontend Dependencies
+        run: npm install
+        working-directory: ./frontend
+
+      - name: Build React App
+        run: npm run build
+        working-directory: ./frontend
+
+      - name: Build and Push Frontend Docker Image
+        uses: mr-smithers-excellent/docker-build-push@v6
+        with:
+          image: ntronics/cicd-frontend
+          directory: ./frontend
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
