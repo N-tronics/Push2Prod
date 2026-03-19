@@ -3,4 +3,4 @@ dist/
 # .env
 .DS_Store
 solution/
-backendigenerated/
+backend/generated/
